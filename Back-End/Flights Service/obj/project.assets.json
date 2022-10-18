@@ -488,11 +488,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\JoshuaJohnson\\Documents\\GitHub\\Capstone\\Back-End\\Back-End.csproj",
+      "projectUniqueName": "C:\\Users\\JoshuaJohnson\\Documents\\GitHub\\Capstone\\Back-End\\Flights Service\\Back-End.csproj",
       "projectName": "Back-End",
-      "projectPath": "C:\\Users\\JoshuaJohnson\\Documents\\GitHub\\Capstone\\Back-End\\Back-End.csproj",
+      "projectPath": "C:\\Users\\JoshuaJohnson\\Documents\\GitHub\\Capstone\\Back-End\\Flights Service\\Back-End.csproj",
       "packagesPath": "C:\\Users\\JoshuaJohnson\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\JoshuaJohnson\\Documents\\GitHub\\Capstone\\Back-End\\obj\\",
+      "outputPath": "C:\\Users\\JoshuaJohnson\\Documents\\GitHub\\Capstone\\Back-End\\Flights Service\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\JoshuaJohnson\\AppData\\Roaming\\NuGet\\NuGet.Config",

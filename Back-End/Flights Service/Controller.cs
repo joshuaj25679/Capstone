@@ -9,7 +9,7 @@ namespace Controllers
     
     public class Controller : ControllerBase
     {
-        private string token = "Qnje6hsDDRzBJmL3wd20RIGXBLun";
+        private string token = "1ORVnc76t9Ps4OHfwgIcPs6fOv0C";
 
         [HttpGet]
         [Route("test")]
@@ -18,17 +18,18 @@ namespace Controllers
         }
 
         [HttpGet]
-        [Route("getFlights")]
-        public ActionResult<String> GetFlights(){
+        [Route("getFlights/{startCity}/{endCity}/{date}")]
+        public ActionResult<String> GetFlights(string startCity, string endCity, string date){
             var client = new RestClient("https://test.api.amadeus.com/v2/shopping/flight-offers");
+
             client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(
                 token, "Bearer"
             );
             
             var request = new RestRequest()
-            .AddParameter("originLocationCode","SLC")
-            .AddParameter("destinationLocationCode","NYC")
-            .AddParameter("departureDate","2023-06-23")
+            .AddParameter("originLocationCode", startCity)
+            .AddParameter("destinationLocationCode", endCity)
+            .AddParameter("departureDate", date)
             .AddParameter("adults", 1)
             .AddParameter("currencyCode","USD");
 

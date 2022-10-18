@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\JoshuaJohnson\\Documents\\School Assignments\\Capstone Project\\Back-End\\Back-End.csproj": {}
+    "C:\\Users\\JoshuaJohnson\\Documents\\GitHub\\Capstone\\Back-End\\Back-End.csproj": {}
   },
   "projects": {
-    "C:\\Users\\JoshuaJohnson\\Documents\\School Assignments\\Capstone Project\\Back-End\\Back-End.csproj": {
+    "C:\\Users\\JoshuaJohnson\\Documents\\GitHub\\Capstone\\Back-End\\Back-End.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\JoshuaJohnson\\Documents\\School Assignments\\Capstone Project\\Back-End\\Back-End.csproj",
+        "projectUniqueName": "C:\\Users\\JoshuaJohnson\\Documents\\GitHub\\Capstone\\Back-End\\Back-End.csproj",
         "projectName": "Back-End",
-        "projectPath": "C:\\Users\\JoshuaJohnson\\Documents\\School Assignments\\Capstone Project\\Back-End\\Back-End.csproj",
+        "projectPath": "C:\\Users\\JoshuaJohnson\\Documents\\GitHub\\Capstone\\Back-End\\Back-End.csproj",
         "packagesPath": "C:\\Users\\JoshuaJohnson\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\JoshuaJohnson\\Documents\\School Assignments\\Capstone Project\\Back-End\\obj\\",
+        "outputPath": "C:\\Users\\JoshuaJohnson\\Documents\\GitHub\\Capstone\\Back-End\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\JoshuaJohnson\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -40,6 +40,10 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "dependencies": {
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
             "RestSharp": {
               "target": "Package",
               "version": "[108.0.2, )"

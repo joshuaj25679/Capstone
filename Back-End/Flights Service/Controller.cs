@@ -1,10 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-//using Microsoft.EntityFrameworkCore;
 using RestSharp;
 using RestSharp.Authenticators.OAuth2;
-
-
-//"docker_db1": "Server=localhost,1433;database=apidb;User ID= SA;password=abc123!!@;"
 
 namespace Controllers
 {
@@ -50,6 +46,7 @@ namespace Controllers
         [Route("getOneCity/{city}")]
         public ActionResult<String> GetOneCity(string city){
             var client = new RestClient("https://test.api.amadeus.com/v1/reference-data/locations");
+            
             client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(
                 token, "Bearer"
             );

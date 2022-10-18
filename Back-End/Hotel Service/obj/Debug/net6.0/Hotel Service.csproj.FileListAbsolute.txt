@@ -1,0 +1,23 @@
+C:\Users\JoshuaJohnson\Documents\GitHub\Capstone\Back-End\Hotel Service\obj\Debug\net6.0\Hotel Service.csproj.AssemblyReference.cache
+C:\Users\JoshuaJohnson\Documents\GitHub\Capstone\Back-End\Hotel Service\obj\Debug\net6.0\Hotel Service.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\JoshuaJohnson\Documents\GitHub\Capstone\Back-End\Hotel Service\obj\Debug\net6.0\Hotel Service.AssemblyInfoInputs.cache
+C:\Users\JoshuaJohnson\Documents\GitHub\Capstone\Back-End\Hotel Service\obj\Debug\net6.0\Hotel Service.AssemblyInfo.cs
+C:\Users\JoshuaJohnson\Documents\GitHub\Capstone\Back-End\Hotel Service\obj\Debug\net6.0\Hotel Service.csproj.CoreCompileInputs.cache
+C:\Users\JoshuaJohnson\Documents\GitHub\Capstone\Back-End\Hotel Service\obj\Debug\net6.0\Hotel Service.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\JoshuaJohnson\Documents\GitHub\Capstone\Back-End\Hotel Service\bin\Debug\net6.0\appsettings.Development.json
+C:\Users\JoshuaJohnson\Documents\GitHub\Capstone\Back-End\Hotel Service\bin\Debug\net6.0\appsettings.json
+C:\Users\JoshuaJohnson\Documents\GitHub\Capstone\Back-End\Hotel Service\bin\Debug\net6.0\Hotel Service.exe
+C:\Users\JoshuaJohnson\Documents\GitHub\Capstone\Back-End\Hotel Service\bin\Debug\net6.0\Hotel Service.deps.json
+C:\Users\JoshuaJohnson\Documents\GitHub\Capstone\Back-End\Hotel Service\bin\Debug\net6.0\Hotel Service.runtimeconfig.json
+C:\Users\JoshuaJohnson\Documents\GitHub\Capstone\Back-End\Hotel Service\bin\Debug\net6.0\Hotel Service.dll
+C:\Users\JoshuaJohnson\Documents\GitHub\Capstone\Back-End\Hotel Service\bin\Debug\net6.0\Hotel Service.pdb
+C:\Users\JoshuaJohnson\Documents\GitHub\Capstone\Back-End\Hotel Service\bin\Debug\net6.0\RestSharp.dll
+C:\Users\JoshuaJohnson\Documents\GitHub\Capstone\Back-End\Hotel Service\obj\Debug\net6.0\staticwebassets.build.json
+C:\Users\JoshuaJohnson\Documents\GitHub\Capstone\Back-End\Hotel Service\obj\Debug\net6.0\staticwebassets.development.json
+C:\Users\JoshuaJohnson\Documents\GitHub\Capstone\Back-End\Hotel Service\obj\Debug\net6.0\scopedcss\bundle\Hotel Service.styles.css
+C:\Users\JoshuaJohnson\Documents\GitHub\Capstone\Back-End\Hotel Service\obj\Debug\net6.0\Hotel Service.csproj.CopyComplete
+C:\Users\JoshuaJohnson\Documents\GitHub\Capstone\Back-End\Hotel Service\obj\Debug\net6.0\Hotel Service.dll
+C:\Users\JoshuaJohnson\Documents\GitHub\Capstone\Back-End\Hotel Service\obj\Debug\net6.0\refint\Hotel Service.dll
+C:\Users\JoshuaJohnson\Documents\GitHub\Capstone\Back-End\Hotel Service\obj\Debug\net6.0\Hotel Service.pdb
+C:\Users\JoshuaJohnson\Documents\GitHub\Capstone\Back-End\Hotel Service\obj\Debug\net6.0\Hotel Service.genruntimeconfig.cache
+C:\Users\JoshuaJohnson\Documents\GitHub\Capstone\Back-End\Hotel Service\obj\Debug\net6.0\ref\Hotel Service.dll

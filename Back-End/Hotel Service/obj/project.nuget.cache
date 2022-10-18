@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "MQyZEK0tDuTJibD8uuo6s/jJr1n4GFj6dksryYTwRAbiPX6W+FQ98AlqGO7ABa9soxWNZNqbBSgWKso0thWm7Q==",
+  "dgSpecHash": "M9/HGikaGik4YBu8YDn/zJivwg746V8MZndk+b+Hk0428ay9ne1ZEP/nKmaOyAXaHUd1DvRTK4OQoOKE5ZqnBw==",
   "success": true,
   "projectFilePath": "C:\\Users\\JoshuaJohnson\\Documents\\GitHub\\Capstone\\Back-End\\Hotel Service\\Hotel Service.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\JoshuaJohnson\\.nuget\\packages\\restsharp\\108.0.2\\restsharp.108.0.2.nupkg.sha512"
+  ],
   "logs": []
 }

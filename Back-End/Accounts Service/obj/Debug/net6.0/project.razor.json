@@ -1,5 +1,5 @@
 {
-  "FilePath": "c:\\Users\\JoshuaJohnson\\Documents\\GitHub\\Capstone\\Back-End\\Flights Service\\Back-End.csproj",
+  "FilePath": "c:\\Users\\JoshuaJohnson\\Documents\\GitHub\\Capstone\\Back-End\\Accounts Service\\Accounts Service.csproj",
   "Configuration": {
     "ConfigurationName": "MVC-3.0",
     "LanguageVersion": "6.0",
@@ -16295,7 +16295,7 @@
     ],
     "CSharpLanguageVersion": 1000
   },
-  "RootNamespace": "Back_End",
+  "RootNamespace": "Accounts_Service",
   "Documents": [],
   "SerializationFormat": "0.2"
 }

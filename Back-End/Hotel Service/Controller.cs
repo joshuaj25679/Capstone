@@ -10,7 +10,7 @@ namespace Controllers
 
     public class Controller : ControllerBase
     {
-        private string token = "i22enmlIAhkOt3PlmZrQH3C88EMJ";
+        private string token = "upwVTCuutPfi5krYCqIagc6GuZjj";
 
         [HttpGet]
         [Route("test")]
@@ -20,8 +20,8 @@ namespace Controllers
         }
 
         [HttpGet]
-        [Route("getHotelByCity/{city}")]
-        public ActionResult<String> GetHotelsByCity(string city)
+        [Route("getHotelByCity")]
+        public ActionResult<String> GetHotelsByCity([FromBody] string city)
         {
             var client = new RestClient("https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city");
             client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(
@@ -46,8 +46,8 @@ namespace Controllers
         }
 
         [HttpGet]
-        [Route("getHotelOffers/{city}")]
-        public ActionResult<Dictionary<string, string>> GetHotelOffers(string city)
+        [Route("getHotelOffers")]
+        public ActionResult<Dictionary<string, string>> GetHotelOffers([FromBody] string city)
         {
             var client = new RestClient("https://test.api.amadeus.com/v3/shopping/hotel-offers");
 

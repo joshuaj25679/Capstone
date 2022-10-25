@@ -10,7 +10,7 @@ namespace Controllers
 
     public class Controller : ControllerBase
     {
-        private string token = "V9kx5JqpRUwOFTWdYO2umNXAAD2O";
+        private string token = "4JqaWqGhBNxoS44ujpGuCfxapJ06";
 
         [HttpGet]
         [Route("test")]
@@ -20,8 +20,8 @@ namespace Controllers
         }
 
         [HttpGet]
-        [Route("getFlights/{startCity}/{endCity}/{date}")]
-        public ActionResult<Dictionary<string, Dictionary<string, string>>> GetFlights(string startCity, string endCity, string date)
+        [Route("getFlights")]
+        public ActionResult<Dictionary<string, Dictionary<string, string>>> GetFlights([FromBody] Dictionary<string, string> parameters)
         {
             //Endpoint URL
             var client = new RestClient("https://test.api.amadeus.com/v2/shopping/flight-offers");
@@ -33,9 +33,9 @@ namespace Controllers
 
             //Add Parameters to the API Request
             var request = new RestRequest()
-            .AddParameter("originLocationCode", startCity)
-            .AddParameter("destinationLocationCode", endCity)
-            .AddParameter("departureDate", date)
+            .AddParameter("originLocationCode", parameters["startCity"])
+            .AddParameter("destinationLocationCode", parameters["endCity"])
+            .AddParameter("departureDate", parameters["date"])
             .AddParameter("adults", 1)
             .AddParameter("currencyCode", "USD");
 
@@ -58,6 +58,7 @@ namespace Controllers
                     //Adding Data to return
                     tempData.Add("bookableSeats", flightDataDeserialized.data[i].numberOfBookableSeats.ToString());
                     tempData.Add("totalFlightDuration", flightDataDeserialized.data[i].itineraries[0].duration.ToString());
+                    tempData.Add("totalCost", flightDataDeserialized.data[i].price.total.ToString());
 
                     //Check if there are multiple flights per trip
                     if (flightDataDeserialized.data[i].itineraries[0].segments.Count() > 1)
@@ -85,7 +86,6 @@ namespace Controllers
                         tempData.Add("arrivalTime", flightDataDeserialized.data[i].itineraries[0].segments[0].arrival.at.ToString());
                         tempData.Add("airline", flightDataDeserialized.data[i].itineraries[0].segments[0].carrierCode.ToString());
                         tempData.Add("flightCode", flightDataDeserialized.data[i].itineraries[0].segments[0].number.ToString());
-                        tempData.Add("totalCost", flightDataDeserialized.data[i].price.total.ToString());
                     }
                     //Set return Data
                     returnData.Add(i.ToString(), tempData);
@@ -104,8 +104,8 @@ namespace Controllers
         }
 
         [HttpGet]
-        [Route("getOneCity/{city}")]
-        public ActionResult<String> GetOneCity(string city)
+        [Route("getOneCity")]
+        public ActionResult<String> GetOneCity( [FromBody] string city)
         {
             var client = new RestClient("https://test.api.amadeus.com/v1/reference-data/locations");
 

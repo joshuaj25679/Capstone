@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RestSharp;
 using RestSharp.Authenticators.OAuth2;
+using RestSharp.Authenticators;
 using System.Text.Json;
 
 namespace Controllers
@@ -10,7 +11,6 @@ namespace Controllers
 
     public class Controller : ControllerBase
     {
-        private string token = "4JqaWqGhBNxoS44ujpGuCfxapJ06";
 
         [HttpGet]
         [Route("test")]
@@ -20,11 +20,13 @@ namespace Controllers
         }
 
         [HttpGet]
-        [Route("getFlights")]
-        public ActionResult<Dictionary<string, Dictionary<string, string>>> GetFlights([FromBody] Dictionary<string, string> parameters)
+        [Route("getFlights/{startCity}/{endCity}/{departureDate}")]
+        public ActionResult<List<FlightListObject>> GetFlights(string startCity, string endCity, string departureDate)
         {
             //Endpoint URL
             var client = new RestClient("https://test.api.amadeus.com/v2/shopping/flight-offers");
+
+            var token = getAPIToken();
 
             //Add OAuth 2 Authentication Token.
             client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(
@@ -33,9 +35,9 @@ namespace Controllers
 
             //Add Parameters to the API Request
             var request = new RestRequest()
-            .AddParameter("originLocationCode", parameters["startCity"])
-            .AddParameter("destinationLocationCode", parameters["endCity"])
-            .AddParameter("departureDate", parameters["date"])
+            .AddParameter("originLocationCode", startCity)
+            .AddParameter("destinationLocationCode", endCity)
+            .AddParameter("departureDate", departureDate)
             .AddParameter("adults", 1)
             .AddParameter("currencyCode", "USD");
 
@@ -46,56 +48,7 @@ namespace Controllers
             if (response.Content != null)
             {
                 //Build Frame for API return
-                Dictionary<string, Dictionary<string, string>> returnData = new Dictionary<string, Dictionary<string, string>>();
-                Dictionary<string, string> tempData = new Dictionary<string, string>();
-
-                //Convert Response Content to Objects
-                Root flightDataDeserialized = JsonSerializer.Deserialize<Root>(response.Content);
-
-                //Loop over data adding necessary fields to return
-                for (int i = 0; i < flightDataDeserialized.data.Count; i++)
-                {
-                    //Adding Data to return
-                    tempData.Add("bookableSeats", flightDataDeserialized.data[i].numberOfBookableSeats.ToString());
-                    tempData.Add("totalFlightDuration", flightDataDeserialized.data[i].itineraries[0].duration.ToString());
-                    tempData.Add("totalCost", flightDataDeserialized.data[i].price.total.ToString());
-
-                    //Check if there are multiple flights per trip
-                    if (flightDataDeserialized.data[i].itineraries[0].segments.Count() > 1)
-                    {
-                        //Loop over each flight to add data
-                        for (int j = 0; j < flightDataDeserialized.data[i].itineraries[0].segments.Count(); j++)
-                        {
-                            //Adding Data to return
-                            tempData.Add("flightDuration" + j, flightDataDeserialized.data[i].itineraries[0].segments[j].duration.ToString());
-                            tempData.Add("departureLocation" + j, flightDataDeserialized.data[i].itineraries[0].segments[j].departure.iataCode.ToString());
-                            tempData.Add("departureTime" + j, flightDataDeserialized.data[i].itineraries[0].segments[j].departure.at.ToString());
-                            tempData.Add("arrivalLocation" + j, flightDataDeserialized.data[i].itineraries[0].segments[j].arrival.iataCode.ToString());
-                            tempData.Add("arrivalTime" + j, flightDataDeserialized.data[i].itineraries[0].segments[j].arrival.at.ToString());
-                            tempData.Add("airline" + j, flightDataDeserialized.data[i].itineraries[0].segments[j].carrierCode.ToString());
-                            tempData.Add("flightCode" + j, flightDataDeserialized.data[i].itineraries[0].segments[j].number.ToString());
-                        }
-                    }
-                    else
-                    {
-                        //Adding Data to return
-                        tempData.Add("flightDuration", flightDataDeserialized.data[i].itineraries[0].segments[0].duration.ToString());
-                        tempData.Add("departureLocation", flightDataDeserialized.data[i].itineraries[0].segments[0].departure.iataCode.ToString());
-                        tempData.Add("departureTime", flightDataDeserialized.data[i].itineraries[0].segments[0].departure.at.ToString());
-                        tempData.Add("arrivalLocation", flightDataDeserialized.data[i].itineraries[0].segments[0].arrival.iataCode.ToString());
-                        tempData.Add("arrivalTime", flightDataDeserialized.data[i].itineraries[0].segments[0].arrival.at.ToString());
-                        tempData.Add("airline", flightDataDeserialized.data[i].itineraries[0].segments[0].carrierCode.ToString());
-                        tempData.Add("flightCode", flightDataDeserialized.data[i].itineraries[0].segments[0].number.ToString());
-                    }
-                    //Set return Data
-                    returnData.Add(i.ToString(), tempData);
-
-                    //Reset temporary dictionary of values
-                    tempData = new Dictionary<string, string>();
-                }
-
-                //Return Data
-                return returnData;
+                return sortFlightData(response.Content);
             }
             else
             {
@@ -105,9 +58,11 @@ namespace Controllers
 
         [HttpGet]
         [Route("getOneCity")]
-        public ActionResult<String> GetOneCity( [FromBody] string city)
+        public ActionResult<String> GetOneCity([FromBody] string city)
         {
             var client = new RestClient("https://test.api.amadeus.com/v1/reference-data/locations");
+
+            var token = getAPIToken();
 
             client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(
                 token, "Bearer"
@@ -131,6 +86,84 @@ namespace Controllers
             {
                 return "Custom Error Message";
             }
+        }
+
+        private string getAPIToken()
+        {
+            var client = new RestClient("https://test.api.amadeus.com/v1/security/oauth2/token");
+            var request = new RestRequest();
+            request.AddParameter("grant_type", "client_credentials");
+            request.AddParameter("client_id", "ojClaW43C1GBhtQkbleppVJ5tVcABUCr");
+            request.AddParameter("client_secret", "2oPn3E5vMk31begC");
+
+            var response = client.Post(request);
+
+            if (response.Content != null)
+            {
+                TokenRoot token = JsonSerializer.Deserialize<TokenRoot>(response.Content);
+                return token.access_token;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private List<FlightListObject> sortFlightData(string data)
+        {
+            List<FlightListObject> returnData = new List<FlightListObject>();
+            //Convert Response Content to Objects
+            Root flightDataDeserialized = JsonSerializer.Deserialize<Root>(data);
+
+            //Loop over data adding necessary fields to return
+            for (int i = 0; i < flightDataDeserialized.data.Count; i++)
+            {
+                //Adding Data to return
+                FlightListObject tempData = new FlightListObject(
+                    Int32.Parse(flightDataDeserialized.data[i].id),
+                    flightDataDeserialized.data[i].numberOfBookableSeats,
+                    flightDataDeserialized.data[i].itineraries[0].duration.Substring(2),
+                    Double.Parse(flightDataDeserialized.data[i].price.total)
+                    );
+                
+                //Check if there are multiple flights per trip
+                if (flightDataDeserialized.data[i].itineraries[0].segments.Count() > 1)
+                {
+
+                    //Loop over each flight to add data
+                    for (int j = 0; j < flightDataDeserialized.data[i].itineraries[0].segments.Count(); j++)
+                    {
+                        LayoverObject tempLayover = new LayoverObject();
+                        //Adding Data to return
+                        tempLayover.FlightDuration = flightDataDeserialized.data[i].itineraries[0].segments[j].duration.Substring(2);
+                        tempLayover.DepartureLocation = flightDataDeserialized.data[i].itineraries[0].segments[j].departure.iataCode;
+                        tempLayover.DepartureTime = flightDataDeserialized.data[i].itineraries[0].segments[j].departure.at.ToString();
+                        tempLayover.ArrivalLocation = flightDataDeserialized.data[i].itineraries[0].segments[j].arrival.iataCode;
+                        tempLayover.ArrivalTime = flightDataDeserialized.data[i].itineraries[0].segments[j].arrival.at.ToString();
+                        tempLayover.Airline = flightDataDeserialized.data[i].itineraries[0].segments[j].carrierCode;
+                        tempLayover.FlightCode = Int32.Parse(flightDataDeserialized.data[i].itineraries[0].segments[j].number);
+                        tempData.addToList(tempLayover);
+                    }
+                }
+                else
+                {
+                    LayoverObject tempLayover = new LayoverObject();
+                    //Adding Data to return
+                    tempLayover.FlightDuration = flightDataDeserialized.data[i].itineraries[0].segments[0].duration.Substring(2);
+                    tempLayover.DepartureLocation = flightDataDeserialized.data[i].itineraries[0].segments[0].departure.iataCode;
+                    tempLayover.DepartureTime = flightDataDeserialized.data[i].itineraries[0].segments[0].departure.at.ToString();
+                    tempLayover.ArrivalLocation = flightDataDeserialized.data[i].itineraries[0].segments[0].arrival.iataCode;
+                    tempLayover.ArrivalTime = flightDataDeserialized.data[i].itineraries[0].segments[0].arrival.at.ToString();
+                    tempLayover.Airline = flightDataDeserialized.data[i].itineraries[0].segments[0].carrierCode;
+                    tempLayover.FlightCode = Int32.Parse(flightDataDeserialized.data[i].itineraries[0].segments[0].number);
+                    tempData.addToList(tempLayover);
+                }
+                //Set return Data
+                returnData.Add(tempData);
+            }
+
+            //Return Data
+            return returnData;
         }
     }
 }

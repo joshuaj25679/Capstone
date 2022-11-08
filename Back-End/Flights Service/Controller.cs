@@ -20,8 +20,8 @@ namespace Controllers
         }
 
         [HttpGet]
-        [Route("getFlights/{startCity}/{endCity}/{departureDate}")]
-        public ActionResult<List<FlightListObject>> GetFlights(string startCity, string endCity, string departureDate)
+        [Route("getFlights/{startCity}/{endCity}/{departureDate}/{isNonStop}")]
+        public ActionResult<List<FlightListObject>> GetFlights(string startCity, string endCity, string departureDate, string isNonStop)
         {
             //Endpoint URL
             var client = new RestClient("https://test.api.amadeus.com/v2/shopping/flight-offers");
@@ -33,13 +33,20 @@ namespace Controllers
                 token, "Bearer"
             );
 
+            //Get individual cities from calls here
+            startCity = GetOneCity(startCity);
+            endCity = GetOneCity(endCity);
+
+
             //Add Parameters to the API Request
             var request = new RestRequest()
             .AddParameter("originLocationCode", startCity)
             .AddParameter("destinationLocationCode", endCity)
             .AddParameter("departureDate", departureDate)
             .AddParameter("adults", 1)
-            .AddParameter("currencyCode", "USD");
+            .AddParameter("nonStop", isNonStop)
+            .AddParameter("currencyCode", "USD")
+            .AddParameter("max", 50);
 
             //Send API Request and Get Response
             var response = client.Get(request);
@@ -56,9 +63,7 @@ namespace Controllers
             }
         }
 
-        [HttpGet]
-        [Route("getOneCity")]
-        public ActionResult<String> GetOneCity([FromBody] string city)
+        public string GetOneCity(string city)
         {
             var client = new RestClient("https://test.api.amadeus.com/v1/reference-data/locations");
 
@@ -122,10 +127,10 @@ namespace Controllers
                 FlightListObject tempData = new FlightListObject(
                     Int32.Parse(flightDataDeserialized.data[i].id),
                     flightDataDeserialized.data[i].numberOfBookableSeats,
-                    flightDataDeserialized.data[i].itineraries[0].duration.Substring(2),
+                    flightDataDeserialized.data[i].itineraries[0].duration.ToString(),
                     Double.Parse(flightDataDeserialized.data[i].price.total)
                     );
-                
+
                 //Check if there are multiple flights per trip
                 if (flightDataDeserialized.data[i].itineraries[0].segments.Count() > 1)
                 {

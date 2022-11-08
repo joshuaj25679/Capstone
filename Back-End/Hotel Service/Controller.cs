@@ -10,8 +10,6 @@ namespace Controllers
 
     public class Controller : ControllerBase
     {
-        private string token = "upwVTCuutPfi5krYCqIagc6GuZjj";
-
         [HttpGet]
         [Route("test")]
         public ActionResult<String> TestEndPoint()
@@ -20,10 +18,13 @@ namespace Controllers
         }
 
         [HttpGet]
-        [Route("getHotelByCity")]
-        public ActionResult<String> GetHotelsByCity([FromBody] string city)
+        [Route("getHotelByCity/{city}")]
+        public ActionResult<String> GetHotelsByCity(string city)
         {
             var client = new RestClient("https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city");
+
+            var token = getAPIToken();
+
             client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(
                 token, "Bearer"
             );
@@ -50,6 +51,8 @@ namespace Controllers
         public ActionResult<Dictionary<string, string>> GetHotelOffers([FromBody] string city)
         {
             var client = new RestClient("https://test.api.amadeus.com/v3/shopping/hotel-offers");
+
+            var token = getAPIToken();
 
             client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(
                 token, "Bearer"
@@ -79,5 +82,26 @@ namespace Controllers
                 return null;
             }
         }
+        private string getAPIToken()
+        {
+            var client = new RestClient("https://test.api.amadeus.com/v1/security/oauth2/token");
+            var request = new RestRequest();
+            request.AddParameter("grant_type", "client_credentials");
+            request.AddParameter("client_id", "ojClaW43C1GBhtQkbleppVJ5tVcABUCr");
+            request.AddParameter("client_secret", "2oPn3E5vMk31begC");
+
+            var response = client.Post(request);
+
+            if (response.Content != null)
+            {
+                TokenRoot token = JsonSerializer.Deserialize<TokenRoot>(response.Content);
+                return token.access_token;
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
+    
 }

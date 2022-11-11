@@ -17,10 +17,10 @@ namespace Controllers
             return "Test Succesful";
         }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpGet]
-        [Route("getHotelOffers/{city}/{date}")]
-        public ActionResult<List<HotelObject>> GetHotelOffers(string city, string date)
+        [Route("getHotelOffers/{city}/{startDate}/{endDate}")]
+        public ActionResult<List<HotelObject>> GetHotelOffers(string city, string startDate, string endDate)
         {
             var client = new RestClient("https://test.api.amadeus.com/v3/shopping/hotel-offers");
 
@@ -36,7 +36,8 @@ namespace Controllers
             var request = new RestRequest()
             .AddParameter("hotelIds", "[" + getHotelIds(hotelsInCity) + "]")
             .AddParameter("adults", "1")
-            .AddParameter("checkInDate", date)
+            .AddParameter("checkInDate", startDate)
+            .AddParameter("checkOutDate", endDate)
             .AddParameter("currency", "USD");
 
             //Get Response from API Call
@@ -56,6 +57,7 @@ namespace Controllers
                 {
                     //Create custom object with needed data
                     returnList.Add(new HotelObject(
+                                        i+1,
                                         hotelDataDeserialized.data[i].hotel.name,
                                         hotelDataDeserialized.data[i].offers[0].checkInDate,
                                         hotelDataDeserialized.data[i].offers[0].checkOutDate,
@@ -96,7 +98,7 @@ namespace Controllers
             }
         }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //Helper Method to get all Hotels in a city 
         private List<string> GetHotelsByCity(string city)
         {
@@ -107,6 +109,8 @@ namespace Controllers
             client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(
                 token, "Bearer"
             );
+
+            city = GetOneCity(city);
 
             var request = new RestRequest()
             .AddParameter("cityCode", city);
@@ -130,8 +134,39 @@ namespace Controllers
                 return null;
             }
         }
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //Format List of Hotels to fit
+        public string GetOneCity(string city)
+        {
+            var client = new RestClient("https://test.api.amadeus.com/v1/reference-data/locations");
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            var token = getAPIToken();
+
+            client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(
+                token, "Bearer"
+            );
+
+            var request = new RestRequest()
+            .AddParameter("subType", "CITY")
+            .AddParameter("keyword", city)
+            .AddParameter("view", "LIGHT");
+
+            var response = client.Get(request);
+
+            if (response.Content != null)
+            {
+                //Convert Response Content to Objects
+                CityRoot flightDataDeserialized = JsonSerializer.Deserialize<CityRoot>(response.Content);
+                string returnData = flightDataDeserialized.data[0].iataCode;
+                return returnData;
+            }
+            else
+            {
+                return "Custom Error Message";
+            }
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //Format List of Hotels to fit
         private string getHotelIds(List<string> idList)
         {

@@ -17,38 +17,10 @@ namespace Controllers
             return "Test Succesful";
         }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         [HttpGet]
-        [Route("getHotelByCity/{city}")]
-        public ActionResult<String> GetHotelsByCity(string city)
-        {
-            var client = new RestClient("https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city");
-
-            var token = getAPIToken();
-
-            client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(
-                token, "Bearer"
-            );
-
-            var request = new RestRequest()
-            .AddParameter("cityCode", city);
-
-            var response = client.Get(request);
-
-            System.Console.WriteLine(response.Content);
-
-            if (response.Content != null)
-            {
-                return response.Content;
-            }
-            else
-            {
-                return "Custom Error Message";
-            }
-        }
-
-        [HttpGet]
-        [Route("getHotelOffers")]
-        public ActionResult<Dictionary<string, string>> GetHotelOffers([FromBody] string city)
+        [Route("getHotelOffers/{city}/{date}")]
+        public ActionResult<List<HotelObject>> GetHotelOffers(string city, string date)
         {
             var client = new RestClient("https://test.api.amadeus.com/v3/shopping/hotel-offers");
 
@@ -58,30 +30,51 @@ namespace Controllers
                 token, "Bearer"
             );
 
+            List<string> hotelsInCity = GetHotelsByCity(city);
+
+            //Build Request with Parameters
             var request = new RestRequest()
-            .AddParameter("hotelIds", "[" + city + "]")
+            .AddParameter("hotelIds", "[" + getHotelIds(hotelsInCity) + "]")
             .AddParameter("adults", "1")
+            .AddParameter("checkInDate", date)
             .AddParameter("currency", "USD");
 
+            //Get Response from API Call
             var response = client.Get(request);
 
+            //Clean up data and return it IF the response exists
             if (response.Content != null)
             {
-                Dictionary<string, string> returnData = new Dictionary<string, string>();
-                Root hotelDataDeserialized = JsonSerializer.Deserialize<Root>(response.Content);
-                returnData.Add("hotelName", hotelDataDeserialized.data[0].hotel.name);
-                returnData.Add("checkInDate", hotelDataDeserialized.data[0].offers[0].checkInDate);
-                returnData.Add("checkOutDate", hotelDataDeserialized.data[0].offers[0].checkOutDate);
-                returnData.Add("price", hotelDataDeserialized.data[0].offers[0].price.total);
-                returnData.Add("guests", hotelDataDeserialized.data[0].offers[0].guests.adults.ToString());
+                //Setup List to return
+                List<HotelObject> returnList = new List<HotelObject>();
 
-                return returnData;
+                //Turn Response into C# Class Objects for easier accesability
+                Root hotelDataDeserialized = JsonSerializer.Deserialize<Root>(response.Content);
+
+                //Loop over list of data objects to make into a single custom objecct fo the list
+                for (int i = 0; i < hotelDataDeserialized.data.Count(); i++)
+                {
+                    //Create custom object with needed data
+                    returnList.Add(new HotelObject(
+                                        hotelDataDeserialized.data[i].hotel.name,
+                                        hotelDataDeserialized.data[i].offers[0].checkInDate,
+                                        hotelDataDeserialized.data[i].offers[0].checkOutDate,
+                                        hotelDataDeserialized.data[i].offers[0].price.total,
+                                        hotelDataDeserialized.data[i].offers[0].room.description.text
+                                        ));
+
+                }
+                return returnList;
             }
             else
             {
                 return null;
             }
         }
+
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //Get OAuth2.0 Token to access Amadeus API
         private string getAPIToken()
         {
             var client = new RestClient("https://test.api.amadeus.com/v1/security/oauth2/token");
@@ -102,6 +95,55 @@ namespace Controllers
                 return null;
             }
         }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //Helper Method to get all Hotels in a city 
+        private List<string> GetHotelsByCity(string city)
+        {
+            var client = new RestClient("https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city");
+
+            var token = getAPIToken();
+
+            client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(
+                token, "Bearer"
+            );
+
+            var request = new RestRequest()
+            .AddParameter("cityCode", city);
+
+            var response = client.Get(request);
+
+            if (response.Content != null)
+            {
+                System.Console.WriteLine(response.Content.ToString());
+                List<string> hotelsInCity = new List<string>();
+                CityHotelRoot tempData = JsonSerializer.Deserialize<CityHotelRoot>(response.Content);
+
+                for (int i = 0; i < tempData.data.Count(); i++)
+                {
+                    hotelsInCity.Add(tempData.data[i].hotelId);
+                }
+                return hotelsInCity;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //Format List of Hotels to fit
+        private string getHotelIds(List<string> idList)
+        {
+            string returnData = "";
+
+            foreach (string id in idList)
+            {
+                returnData = "" + returnData + id + ", ";
+            }
+
+            return returnData.Remove(returnData.Length - 2);
+        }
     }
-    
+
 }

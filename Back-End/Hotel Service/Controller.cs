@@ -29,8 +29,10 @@ namespace Controllers
             client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(
                 token, "Bearer"
             );
-
+            
+            
             List<string> hotelsInCity = GetHotelsByCity(city);
+
 
             //Build Request with Parameters
             var request = new RestRequest()
@@ -46,12 +48,14 @@ namespace Controllers
             //Clean up data and return it IF the response exists
             if (response.Content != null)
             {
+                System.Console.WriteLine("Response Received");
                 //Setup List to return
                 List<HotelObject> returnList = new List<HotelObject>();
 
                 //Turn Response into C# Class Objects for easier accesability
                 Root hotelDataDeserialized = JsonSerializer.Deserialize<Root>(response.Content);
 
+                System.Console.WriteLine("Processing Hotel Data to Custom object");
                 //Loop over list of data objects to make into a single custom objecct fo the list
                 for (int i = 0; i < hotelDataDeserialized.data.Count(); i++)
                 {
@@ -109,7 +113,6 @@ namespace Controllers
             client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(
                 token, "Bearer"
             );
-
             city = GetOneCity(city);
 
             var request = new RestRequest()
@@ -119,7 +122,7 @@ namespace Controllers
 
             if (response.Content != null)
             {
-                System.Console.WriteLine(response.Content.ToString());
+                //System.Console.WriteLine(response.Content.ToString());
                 List<string> hotelsInCity = new List<string>();
                 CityHotelRoot tempData = JsonSerializer.Deserialize<CityHotelRoot>(response.Content);
 
@@ -135,7 +138,7 @@ namespace Controllers
             }
         }
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //Format List of Hotels to fit
+        //Get a general city name to a city code for use.
         public string GetOneCity(string city)
         {
             var client = new RestClient("https://test.api.amadeus.com/v1/reference-data/locations");
@@ -147,7 +150,7 @@ namespace Controllers
             );
 
             var request = new RestRequest()
-            .AddParameter("subType", "CITY")
+            .AddParameter("subType", "CITY,AIRPORT")
             .AddParameter("keyword", city)
             .AddParameter("view", "LIGHT");
 
@@ -170,13 +173,21 @@ namespace Controllers
         //Format List of Hotels to fit
         private string getHotelIds(List<string> idList)
         {
+
             string returnData = "";
-
-            foreach (string id in idList)
+            int counter = 0;
+            foreach(string id in idList)
             {
-                returnData = "" + returnData + id + ", ";
+                
+                if(counter <= 100){
+                    returnData = "" + returnData + id + ", ";
+                    counter ++;
+                }
+                else{
+                    break;
+                }
+                
             }
-
             return returnData.Remove(returnData.Length - 2);
         }
     }

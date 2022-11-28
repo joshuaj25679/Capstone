@@ -15,9 +15,9 @@ public class CityDatum
     public string id { get; set; }
     public Self self { get; set; }
     public string iataCode { get; set; }
-    public Address address { get; set; }
+    public CityAddress address { get; set; }
 }
-public class Address
+public class CityAddress
 {
     public string cityName { get; set; }
     public string countryName { get; set; }

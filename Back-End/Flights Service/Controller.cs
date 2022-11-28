@@ -46,7 +46,7 @@ namespace Controllers
             .AddParameter("adults", 1)
             .AddParameter("nonStop", isNonStop)
             .AddParameter("currencyCode", "USD")
-            .AddParameter("max", 50);
+            .AddParameter("max", 20);
 
             //Send API Request and Get Response
             var response = client.Get(request);
@@ -60,6 +60,36 @@ namespace Controllers
             else
             {
                 return null;
+            }
+        }
+
+        public string GetOneAirport(string city)
+        {
+            var client = new RestClient("https://test.api.amadeus.com/v1/reference-data/locations");
+
+            var token = getAPIToken();
+
+            client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(
+                token, "Bearer"
+            );
+
+            var request = new RestRequest()
+            .AddParameter("subType", "AIRPORT")
+            .AddParameter("keyword", city)
+            .AddParameter("view", "LIGHT");
+
+            var response = client.Get(request);
+
+            if (response.Content != null)
+            {
+                //Convert Response Content to Objects
+                AirportRoot flightDataDeserialized = JsonSerializer.Deserialize<AirportRoot>(response.Content);
+                string returnData = flightDataDeserialized.data[0].name;
+                return returnData;
+            }
+            else
+            {
+                return "Custom Error Message";
             }
         }
 
@@ -85,6 +115,34 @@ namespace Controllers
                 //Convert Response Content to Objects
                 CityRoot flightDataDeserialized = JsonSerializer.Deserialize<CityRoot>(response.Content);
                 string returnData = flightDataDeserialized.data[0].iataCode;
+                return returnData;
+            }
+            else
+            {
+                return "Custom Error Message";
+            }
+        }
+
+        public string GetAirline(string airlineCode)
+        {
+            var client = new RestClient("https://test.api.amadeus.com/v1/reference-data/airlines");
+
+            var token = getAPIToken();
+
+            client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(
+                token, "Bearer"
+            );
+
+            var request = new RestRequest()
+            .AddParameter("airlineCodes", airlineCode);
+
+            var response = client.Get(request);
+
+            if (response.Content != null)
+            {
+                //Convert Response Content to Objects
+                AirlineRoot flightDataDeserialized = JsonSerializer.Deserialize<AirlineRoot>(response.Content);
+                string returnData = flightDataDeserialized.data[0].commonName;
                 return returnData;
             }
             else
@@ -141,11 +199,11 @@ namespace Controllers
                         LayoverObject tempLayover = new LayoverObject();
                         //Adding Data to return
                         tempLayover.FlightDuration = flightDataDeserialized.data[i].itineraries[0].segments[j].duration.Substring(2);
-                        tempLayover.DepartureLocation = flightDataDeserialized.data[i].itineraries[0].segments[j].departure.iataCode;
+                        tempLayover.DepartureLocation = GetOneAirport(flightDataDeserialized.data[i].itineraries[0].segments[j].departure.iataCode);
                         tempLayover.DepartureTime = flightDataDeserialized.data[i].itineraries[0].segments[j].departure.at.ToString();
-                        tempLayover.ArrivalLocation = flightDataDeserialized.data[i].itineraries[0].segments[j].arrival.iataCode;
+                        tempLayover.ArrivalLocation = GetOneAirport(flightDataDeserialized.data[i].itineraries[0].segments[j].arrival.iataCode);
                         tempLayover.ArrivalTime = flightDataDeserialized.data[i].itineraries[0].segments[j].arrival.at.ToString();
-                        tempLayover.Airline = flightDataDeserialized.data[i].itineraries[0].segments[j].carrierCode;
+                        tempLayover.Airline = GetAirline(flightDataDeserialized.data[i].itineraries[0].segments[j].carrierCode);
                         tempLayover.FlightCode = Int32.Parse(flightDataDeserialized.data[i].itineraries[0].segments[j].number);
                         tempData.addToList(tempLayover);
                     }
@@ -155,11 +213,11 @@ namespace Controllers
                     LayoverObject tempLayover = new LayoverObject();
                     //Adding Data to return
                     tempLayover.FlightDuration = flightDataDeserialized.data[i].itineraries[0].segments[0].duration.Substring(2);
-                    tempLayover.DepartureLocation = flightDataDeserialized.data[i].itineraries[0].segments[0].departure.iataCode;
+                    tempLayover.DepartureLocation = GetOneAirport(flightDataDeserialized.data[i].itineraries[0].segments[0].departure.iataCode);
                     tempLayover.DepartureTime = flightDataDeserialized.data[i].itineraries[0].segments[0].departure.at.ToString();
-                    tempLayover.ArrivalLocation = flightDataDeserialized.data[i].itineraries[0].segments[0].arrival.iataCode;
+                    tempLayover.ArrivalLocation = GetOneAirport(flightDataDeserialized.data[i].itineraries[0].segments[0].arrival.iataCode);
                     tempLayover.ArrivalTime = flightDataDeserialized.data[i].itineraries[0].segments[0].arrival.at.ToString();
-                    tempLayover.Airline = flightDataDeserialized.data[i].itineraries[0].segments[0].carrierCode;
+                    tempLayover.Airline = GetAirline(flightDataDeserialized.data[i].itineraries[0].segments[0].carrierCode);
                     tempLayover.FlightCode = Int32.Parse(flightDataDeserialized.data[i].itineraries[0].segments[0].number);
                     tempData.addToList(tempLayover);
                 }

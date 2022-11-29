@@ -46,7 +46,7 @@ namespace Controllers
             .AddParameter("adults", 1)
             .AddParameter("nonStop", isNonStop)
             .AddParameter("currencyCode", "USD")
-            .AddParameter("max", 20);
+            .AddParameter("max", 21);
 
             //Send API Request and Get Response
             var response = client.Get(request);

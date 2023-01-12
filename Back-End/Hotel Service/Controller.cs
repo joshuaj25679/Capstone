@@ -86,8 +86,9 @@ namespace Controllers
             var client = new RestClient("https://test.api.amadeus.com/v1/security/oauth2/token");
             var request = new RestRequest();
             request.AddParameter("grant_type", "client_credentials");
-            request.AddParameter("client_id", "ojClaW43C1GBhtQkbleppVJ5tVcABUCr");
-            request.AddParameter("client_secret", "2oPn3E5vMk31begC");
+            //Fill in with your own Amadeus for Developers id and secret
+            request.AddParameter("client_id", "");
+            request.AddParameter("client_secret", "");
 
             var response = client.Post(request);
 
